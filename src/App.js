@@ -1,21 +1,27 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStore, applyMiddleware } from 'redux';
+import reducers from './redux/reducers';
+import NavigationService from './NavigationService';
+import StackNavigator from './navigators/StackNavigator';
+
+export const store = createStore(reducers, {}, applyMiddleware(thunk));
 
 class App extends Component {
     render() {
         return (
-            <View style={styles.container}>
-                <Text>App</Text>
-            </View>
+            <Provider store={store}>
+                <NavigationContainer
+                    ref={navigatorRef => {
+                        NavigationService.setTopLevelNavigator(navigatorRef);
+                    }}
+                >
+                    <StackNavigator />
+                </NavigationContainer>
+            </Provider>
         );
     }
 }
 export default App;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
