@@ -11,6 +11,7 @@ export const getMovieDetails = () => (dispatch, getState) => {
                 dispatch({ type: MOVIE_FETCH_SUCCESS, payload: data });
             })
             .catch(error => {
+                console.log(error);
                 dispatch({ type: MOVIE_FETCH_FAILURE });
             });
     }

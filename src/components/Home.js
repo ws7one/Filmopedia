@@ -110,7 +110,11 @@ class Home extends Component {
         const {
             searchResult,
             noResultMessage,
-            isSearching
+            isSearching,
+            lastSearchedQuery,
+            currentPage,
+            isDeltaLoading,
+            total
         } = this.props.home;
         return (
             <View style={styles.container}>
@@ -126,19 +130,32 @@ class Home extends Component {
                         <ActivityIndicator size="large" />
                     </View>
                 ) : (
-                        <FlatList
-                            data={searchResult}
-                            renderItem={({ item }) => this.renderMovieCard(item)}
-                            keyExtractor={item => item.id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            ListEmptyComponent={
-                                <View style={commonStyle.noDataContainer}>
-                                    <Text style={commonStyle.infoMessageTextStyle}>
-                                        {noResultMessage}
-                                    </Text>
-                                </View>
-                            }
-                        />
+                        <View>
+                            <FlatList
+                                data={searchResult}
+                                renderItem={({ item }) => this.renderMovieCard(item)}
+                                keyExtractor={item => item.id.toString()}
+                                showsVerticalScrollIndicator={false}
+                                onEndReached={() =>
+                                    currentPage < total.pages && !isDeltaLoading &&
+                                    this.props.searchMovie(lastSearchedQuery, currentPage + 1)
+                                }
+                                onEndReachedThreshold={0}
+                                ListEmptyComponent={
+                                    <View style={commonStyle.noDataContainer}>
+                                        <Text style={commonStyle.infoMessageTextStyle}>
+                                            {noResultMessage}
+                                        </Text>
+                                    </View>
+                                }
+                                contentContainerStyle={{ paddingBottom: 50 }}
+                            />
+                            {isDeltaLoading && (<View
+                                style={styles.cardContainer}
+                            >
+                                <ActivityIndicator size="large" color={theme.white} />
+                            </View>)}
+                        </View>
                     )}
             </View>
         );

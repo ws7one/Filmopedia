@@ -12,6 +12,7 @@ export default function StackNavigator() {
             <Stack.Screen
                 name={HOME}
                 component={Home}
+                options={{ title: 'Filmopedia' }}
             />
             <Stack.Screen
                 name={DETAIL}

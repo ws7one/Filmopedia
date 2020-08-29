@@ -2,7 +2,8 @@ import {
     CHANGE_MESSAGE,
     IS_MOVIE_SEARCHING,
     SEARCH_MOVIE_SUCCESS,
-    SEARCH_MOVIE_FAILURE
+    SEARCH_MOVIE_FAILURE,
+    IS_DELTA_LOADING
 } from '../../ActionTypes';
 import {
     initialNoResultMsg,
@@ -19,7 +20,9 @@ const INITIAL_STATE = {
         results: 0
     },
     isSearching: false,
-    noResultMessage: initialNoResultMsg
+    noResultMessage: initialNoResultMsg,
+    lastSearchedQuery: '',
+    isDeltaLoading: false
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -36,6 +39,12 @@ export default (state = INITIAL_STATE, action) => {
                 isSearching: true
             };
 
+        case IS_DELTA_LOADING:
+            return {
+                ...state,
+                isDeltaLoading: true
+            };
+
         case SEARCH_MOVIE_SUCCESS: {
             const newSearchResults = action.payload.page === 1
                 ? action.payload.results
@@ -44,17 +53,20 @@ export default (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 isSearching: false,
-                searchResult: newSearchResults.sort((a, b) => (
-                    a.vote_average * a.vote_count > b.vote_average * b.vote_count
-                        ? -1
-                        : a.vote_average * a.vote_count < b.vote_average * b.vote_count ? 1 : 0)
-                ),
+                isDeltaLoading: false,
+                searchResult: newSearchResults,
+                // .sort((a, b) => (
+                //     a.vote_average * a.vote_count > b.vote_average * b.vote_count
+                //         ? -1
+                //         : a.vote_average * a.vote_count < b.vote_average * b.vote_count ? 1 : 0)
+                // ),
                 currentPage: action.payload.page,
                 total: {
                     pages: action.payload.total_pages,
                     results: action.payload.total_results
                 },
-                noResultMessage: emptySuccessResultMsg
+                noResultMessage: emptySuccessResultMsg,
+                lastSearchedQuery: action.query
             };
         }
 
@@ -62,6 +74,7 @@ export default (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 isSearching: false,
+                isDeltaLoading: false,
                 searchResult: [],
                 currentPage: 0,
                 total: {
