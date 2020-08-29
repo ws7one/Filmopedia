@@ -21,4 +21,7 @@ export const searchEndpoint = (
     return url;
 };
 
-export const imageUrl = (subUrl, width = 300) => `${IMAGE_BASE_URL}/w${width}${subUrl}`;
+export const movieEndpoint = (movieId, language = 'en-US') =>
+    `movie/${movieId}?language=${language}`;
+
+export const imageUrl = (subUrl, width = 500) => `${IMAGE_BASE_URL}/w${width}${subUrl}`;
