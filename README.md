@@ -12,10 +12,10 @@ Run the following scripts to get the app running on your simulator of choice.
 
 **Screenshots**
 
-![Screenshot1](https://github.com/ws7one/Filmopedia/blob/master/screenshots/Simulator%20Screen%20Shot%20-%20iPhone%2011%20-%202020-08-31%20at%2000.35.05.png =200x444)
+<img src="https://github.com/ws7one/Filmopedia/blob/master/screenshots/Simulator%20Screen%20Shot%20-%20iPhone%2011%20-%202020-08-31%20at%2000.35.05.png" alt="Screenshot1" width="200" height="444"/>
 
-![Screenshot2](https://github.com/ws7one/Filmopedia/blob/master/screenshots/Simulator%20Screen%20Shot%20-%20iPhone%2011%20-%202020-08-31%20at%2000.35.24.png)
+<img src="https://github.com/ws7one/Filmopedia/blob/master/screenshots/Simulator%20Screen%20Shot%20-%20iPhone%2011%20-%202020-08-31%20at%2000.35.24.png" alt="Screenshot2" width="200" height="444"/>
 
-![Screenshot3](https://github.com/ws7one/Filmopedia/blob/master/screenshots/Simulator%20Screen%20Shot%20-%20iPhone%2011%20-%202020-08-31%20at%2000.35.33.png)
+<img src="https://github.com/ws7one/Filmopedia/blob/master/screenshots/Simulator%20Screen%20Shot%20-%20iPhone%2011%20-%202020-08-31%20at%2000.35.33.png" alt="Screenshot3" width="200" height="444"/>
 
 <img src="https://github.com/ws7one/Filmopedia/blob/master/screenshots/Simulator%20Screen%20Shot%20-%20iPhone%2011%20-%202020-08-31%20at%2000.36.40.png" alt="Screenshot4" width="200" height="444"/>
