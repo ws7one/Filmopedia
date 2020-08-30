@@ -23,6 +23,8 @@ import NavigationService from '../NavigationService';
 import { INFO } from '../navigators/ScreenNames';
 
 const screenWidth = Dimensions.get('window').width;
+const posterWidth = (screenWidth / 4) - 15;
+const cardWidth = screenWidth - 20;
 
 class Home extends Component {
     constructor(props) {
@@ -37,8 +39,10 @@ class Home extends Component {
     componentDidMount() {
         getData(LAST_SEARCHED_QUERY)
             .then(data => {
-                this.setState({ undebouncedText: data });
-                this.props.searchMovie(data);
+                if (data) {
+                    this.setState({ undebouncedText: data });
+                    this.props.searchMovie(data);
+                }
             })
             .catch(() => {
                 console.log('Error getting data from Async Storage.');
@@ -182,6 +186,7 @@ class Home extends Component {
                                 renderItem={({ item }) => this.renderMovieCard(item)}
                                 keyExtractor={item => item.id.toString()}
                                 showsVerticalScrollIndicator={false}
+                                keyboardShouldPersistTaps='handled'
                                 onEndReached={() => {
                                     if (currentPage < total.pages && !isDeltaLoading) {
                                         // debugger;
@@ -220,8 +225,8 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     cardContainer: {
-        width: screenWidth - 20,
-        height: (screenWidth - 20) / 1.8,
+        width: cardWidth,
+        height: cardWidth / 1.8,
         borderRadius: 20,
         elevation: 1,
         shadowOffset: { width: 5, height: 5 },
@@ -250,14 +255,14 @@ const styles = StyleSheet.create({
     },
     posterContainer: {
         position: 'absolute',
-        top: -75,
+        top: -(posterWidth / 1.2),
         left: 10,
         borderWidth: 2,
         borderColor: theme.white,
         borderRadius: 5,
         overflow: 'hidden',
-        width: 90,
-        height: 135,
+        width: posterWidth,
+        height: posterWidth * 1.5,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: theme.black

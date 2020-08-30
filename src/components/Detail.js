@@ -7,7 +7,8 @@ import {
     ActivityIndicator,
     StatusBar,
     Dimensions,
-    TouchableOpacity
+    TouchableOpacity,
+    ScrollView
 } from 'react-native';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,6 +22,7 @@ import Ratings from './common/Ratings';
 import NavigationService from '../NavigationService';
 
 const screenWidth = Dimensions.get('window').width;
+const posterWidth = screenWidth * 0.4;
 
 const currencyFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -66,154 +68,156 @@ class Detail extends Component {
         } = movieData;
         return (
             <SafeAreaView style={styles.container}>
-                <StatusBar barStyle="light-content" />
-                <View>
-                    <View
-                        style={{
-                            width: screenWidth,
-                            height: backdropPath ? screenWidth / 1.8 : 170
-                        }}
-                    >
-                        {backdropPath && (
-                            <Image
-                                style={{ width: '100%', height: '100%' }}
-                                source={{ uri: imageUrl(backdropPath) }}
-                            />
-                        )}
-                        <TouchableOpacity
+                <StatusBar barStyle="light-content" backgroundColor={theme.black} />
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <View>
+                        <View
                             style={{
-                                position: 'absolute',
-                                top: 10,
-                                left: 10,
-                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                borderRadius: 5
+                                width: screenWidth,
+                                height: backdropPath ? screenWidth / 1.8 : 170
                             }}
-                            onPress={() => NavigationService.back()}
                         >
-                            <Icon name="arrow-back" color={theme.white} size={30} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={{ width: '100%', flexDirection: 'row' }}>
-                    <View style={{ flex: 1, justifyContent: 'flex-end', marginLeft: 10 }}>
-                        <View style={styles.posterContainer}>
-                            {poster ? (
+                            {backdropPath && (
                                 <Image
                                     style={{ width: '100%', height: '100%' }}
-                                    source={{ uri: imageUrl(poster) }}
+                                    source={{ uri: imageUrl(backdropPath) }}
                                 />
-                            ) : (
-                                    <Text style={commonStyle.infoMessageTextStyle}>
-                                        No poster available
-                                    </Text>
-                                )}
+                            )}
+                            <TouchableOpacity
+                                style={{
+                                    position: 'absolute',
+                                    top: 10,
+                                    left: 10,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                    borderRadius: 5
+                                }}
+                                onPress={() => NavigationService.back()}
+                            >
+                                <Icon name="arrow-back" color={theme.white} size={30} />
+                            </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ flex: 1.5, paddingVertical: 10, paddingLeft: 10 }}>
+                    <View style={{ width: '100%', flexDirection: 'row' }}>
+                        <View style={{ flex: 1, justifyContent: 'flex-end', marginLeft: 10 }}>
+                            <View style={styles.posterContainer}>
+                                {poster ? (
+                                    <Image
+                                        style={{ width: '100%', height: '100%' }}
+                                        source={{ uri: imageUrl(poster) }}
+                                    />
+                                ) : (
+                                        <Text style={commonStyle.infoMessageTextStyle}>
+                                            No poster available
+                                        </Text>
+                                    )}
+                            </View>
+                        </View>
+                        <View style={{ flex: 1.5, paddingVertical: 10, paddingLeft: 10 }}>
+                            <Text
+                                style={{
+                                    color: theme.white,
+                                    fontSize: 25,
+                                    fontWeight: '600',
+                                }}
+                                numberOfLines={2}
+                            >
+                                {title}
+                            </Text>
+                            {!!tagline && (<Text
+                                style={{
+                                    color: theme.white,
+                                    fontSize: 12,
+                                    marginBottom: 10
+                                }}
+                                numberOfLines={2}
+                            >
+                                {tagline}
+                            </Text>)}
+                            <Ratings movie={movieData} />
+                            {runtime > 0 && (
+                                <View
+                                    style={{
+                                        flexDirection: 'row', marginTop: 10, alignItems: 'center'
+                                    }}
+                                >
+                                    <Icon
+                                        name="movie-roll"
+                                        type="material-community"
+                                        color={theme.white}
+                                        size={24}
+                                    />
+                                    <Text
+                                        style={{ color: theme.white, fontSize: 16, marginLeft: 5 }}
+                                    >
+                                        {(runtime / 60).toFixed(0)}hr {(runtime % 60)}mins
+                                </Text>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                    {!!releaseDate && (
                         <Text
                             style={{
                                 color: theme.white,
-                                fontSize: 25,
-                                fontWeight: '600',
+                                fontSize: 16,
+                                marginTop: 10,
+                                marginHorizontal: 10,
                             }}
-                            numberOfLines={2}
                         >
-                            {title}
+                            Released on <Text style={{ fontWeight: '600' }}>
+                                {moment(releaseDate).format('LL')}
+                            </Text>
                         </Text>
-                        {!!tagline && (<Text
+                    )}
+                    {genres.length > 0 && (
+                        <View
                             style={{
-                                color: theme.white,
-                                fontSize: 12,
-                                marginBottom: 10
+                                flexDirection: 'row',
+                                marginHorizontal: 10,
+                                marginTop: 10,
+                                alignItems: 'center',
                             }}
-                            numberOfLines={2}
                         >
-                            {tagline}
-                        </Text>)}
-                        <Ratings movie={movieData} />
-                        {runtime > 0 && (
-                            <View
-                                style={{
-                                    flexDirection: 'row', marginTop: 10, alignItems: 'center'
-                                }}
-                            >
-                                <Icon
-                                    name="movie-roll"
-                                    type="material-community"
-                                    color={theme.white}
-                                    size={24}
-                                />
-                                <Text
-                                    style={{ color: theme.white, fontSize: 16, marginLeft: 5 }}
-                                >
-                                    {(runtime / 60).toFixed(0)}hr {(runtime % 60)}mins
-                                </Text>
-                            </View>
-                        )}
+                            {
+                                genres.map(genre => (
+                                    <Text
+                                        key={genre.id}
+                                        style={{
+                                            paddingVertical: 5,
+                                            paddingHorizontal: 10,
+                                            borderRadius: 12,
+                                            overflow: 'hidden',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                            color: theme.white,
+                                            marginRight: 5
+                                        }}
+                                    >
+                                        {genre.name}
+                                    </Text>
+                                ))
+                            }
+                        </View>
+                    )}
+                    {!!overview && (<View style={{ padding: 10 }}>
+                        <Text style={styles.overviewStyle}>
+                            {overview}
+                        </Text>
+                    </View>)}
+                    <View style={{ padding: 10 }}>
+                        <Text style={styles.detailStyle}>
+                            Budget: <Text style={{ fontWeight: '600' }}>
+                                {currencyFormat.format(budget)}
+                            </Text>
+                        </Text>
                     </View>
-                </View>
-                {!!releaseDate && (
-                    <Text
-                        style={{
-                            color: theme.white,
-                            fontSize: 16,
-                            marginTop: 10,
-                            marginHorizontal: 10,
-                        }}
-                    >
-                        Released on <Text style={{ fontWeight: '600' }}>
-                            {moment(releaseDate).format('LL')}
+                    <View style={{ padding: 10 }}>
+                        <Text style={styles.detailStyle}>
+                            Revenue: <Text style={{ fontWeight: '600' }}>
+                                {currencyFormat.format(revenue)}
+                            </Text>
                         </Text>
-                    </Text>
-                )}
-                {genres.length > 0 && (
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            marginHorizontal: 10,
-                            marginTop: 10,
-                            alignItems: 'center',
-                        }}
-                    >
-                        {
-                            genres.map(genre => (
-                                <Text
-                                    key={genre.id}
-                                    style={{
-                                        paddingVertical: 5,
-                                        paddingHorizontal: 10,
-                                        borderRadius: 12,
-                                        overflow: 'hidden',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                        color: theme.white,
-                                        marginRight: 5
-                                    }}
-                                >
-                                    {genre.name}
-                                </Text>
-                            ))
-                        }
                     </View>
-                )}
-                {!!overview && (<View style={{ padding: 10 }}>
-                    <Text style={styles.overviewStyle}>
-                        {overview}
-                    </Text>
-                </View>)}
-                <View style={{ padding: 10 }}>
-                    <Text style={styles.detailStyle}>
-                        Budget: <Text style={{ fontWeight: '600' }}>
-                            {currencyFormat.format(budget)}
-                        </Text>
-                    </Text>
-                </View>
-                <View style={{ padding: 10 }}>
-                    <Text style={styles.detailStyle}>
-                        Revenue: <Text style={{ fontWeight: '600' }}>
-                            {currencyFormat.format(revenue)}
-                        </Text>
-                    </Text>
-                </View>
+                </ScrollView>
             </SafeAreaView>
         );
     }
@@ -230,8 +234,8 @@ const styles = StyleSheet.create({
         borderColor: theme.white,
         borderRadius: 5,
         overflow: 'hidden',
-        width: 150,
-        height: 225,
+        width: posterWidth,
+        height: posterWidth * 1.5,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: theme.black
