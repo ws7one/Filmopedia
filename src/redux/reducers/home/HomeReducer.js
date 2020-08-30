@@ -46,15 +46,26 @@ export default (state = INITIAL_STATE, action) => {
             };
 
         case SEARCH_MOVIE_SUCCESS: {
-            const newSearchResults = action.payload.page === 1
-                ? action.payload.results
-                : [...state.searchResult, ...action.payload.results];
+            let newSearchResults = [];
+            const loadingCard = { isLoading: true, id: -1 };
+            const pushLoadingCard = action.payload.page < action.payload.total_pages;
+            if (action.payload.page === 1) {
+                newSearchResults = [...action.payload.results];
+            } else {
+                newSearchResults = [...state.searchResult];
+                newSearchResults.pop();
+                newSearchResults = [...newSearchResults, ...action.payload.results];
+            }
+
+            if (pushLoadingCard) newSearchResults.push(loadingCard);
 
             return {
                 ...state,
                 isSearching: false,
                 isDeltaLoading: false,
                 searchResult: newSearchResults,
+                //Tried applying sort on ratings, but with an infinite scroll, this gets tedious
+                //So to maintain usability, i have left it out
                 // .sort((a, b) => (
                 //     a.vote_average * a.vote_count > b.vote_average * b.vote_count
                 //         ? -1

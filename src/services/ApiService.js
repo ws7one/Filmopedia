@@ -31,14 +31,5 @@ requestHandler = (method, subUrl, body, headers) => new Promise((resolve, reject
 
     instance.request(options)
         .then(response => resolve(response.data))
-        .catch(error => reject({
-            status: error.response.status,
-            statusText:
-                error.response.data.message ||
-                error.response.data.error,
-            password_is_valid:
-                error.response.data
-                    .password_is_valid,
-            errors: error.response.data.errors
-        }));
+        .catch(error => reject(error));
 });

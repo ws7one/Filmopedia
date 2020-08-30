@@ -17,6 +17,10 @@ import { imageUrl } from '../services/Endpoints';
 import theme from '../theme';
 import { commonStyle } from './common/styles';
 import Ratings from './common/Ratings';
+import { getData } from '../constants/utils';
+import { LAST_SEARCHED_QUERY } from '../constants';
+import NavigationService from '../NavigationService';
+import { INFO } from '../navigators/ScreenNames';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -28,6 +32,17 @@ class Home extends Component {
             undebouncedText: '',
             minSearchTextLength: 3
         };
+    }
+
+    componentDidMount() {
+        getData(LAST_SEARCHED_QUERY)
+            .then(data => {
+                this.setState({ undebouncedText: data });
+                this.props.searchMovie(data);
+            })
+            .catch(() => {
+                console.log('Error getting data from Async Storage.');
+            });
     }
 
     componentWillUnmount() {
@@ -50,60 +65,73 @@ class Home extends Component {
     }
 
     renderMovieCard = (item) => (
-        <TouchableOpacity
-            style={styles.cardContainer}
-            onPress={() => this.props.navigateToDetail(item.id)}
-        >
-            <Image
-                style={styles.imageStyle}
-                source={{
-                    uri: imageUrl(item.backdrop_path)
-                }}
-            />
-            <View style={styles.detailContainer}>
-                <View style={styles.ratingsContainer}>
-                    <View style={{ flex: 1 }} />
-                    <View
-                        style={{
-                            flex: 3,
-                            paddingVertical: 5,
-                            justifyContent: 'flex-end',
-                            paddingLeft: 10
+        item.isLoading
+            ? (
+                <View
+                    style={[
+                        styles.cardContainer,
+                        { justifyContent: 'center', alignItems: 'center' }
+                    ]}
+                >
+                    <ActivityIndicator size="large" color={theme.white} />
+                </View>
+            )
+            : (
+                <TouchableOpacity
+                    style={styles.cardContainer}
+                    onPress={() => this.props.navigateToDetail(item.id)}
+                >
+                    <Image
+                        style={styles.imageStyle}
+                        source={{
+                            uri: imageUrl(item.backdrop_path)
                         }}
-                    >
-                        <Ratings movie={item} />
-                    </View>
-                </View>
-                <View style={styles.titleContainer}>
-                    <View style={{ flex: 1 }} />
-                    <View style={{ flex: 3, paddingVertical: 5, justifyContent: 'center' }}>
-                        <Text
-                            style={{
-                                color: theme.white,
-                                fontSize: 20,
-                                fontWeight: '600',
-                                marginLeft: 10
-                            }}
-                            numberOfLines={2}
-                        >
-                            {item.original_title}
-                        </Text>
-                    </View>
-                    <View style={styles.posterContainer}>
-                        {item.poster_path ? (
-                            <Image
-                                style={{ width: '100%', height: '100%' }}
-                                source={{ uri: imageUrl(item.poster_path) }}
-                            />
-                        ) : (
-                                <Text style={commonStyle.infoMessageTextStyle}>
-                                    No poster available
+                    />
+                    <View style={styles.detailContainer}>
+                        <View style={styles.ratingsContainer}>
+                            <View style={{ flex: 1 }} />
+                            <View
+                                style={{
+                                    flex: 3,
+                                    paddingVertical: 5,
+                                    justifyContent: 'flex-end',
+                                    paddingLeft: 10
+                                }}
+                            >
+                                <Ratings movie={item} />
+                            </View>
+                        </View>
+                        <View style={styles.titleContainer}>
+                            <View style={{ flex: 1 }} />
+                            <View style={{ flex: 3, paddingVertical: 5, justifyContent: 'center' }}>
+                                <Text
+                                    style={{
+                                        color: theme.white,
+                                        fontSize: 20,
+                                        fontWeight: '600',
+                                        marginLeft: 10
+                                    }}
+                                    numberOfLines={2}
+                                >
+                                    {item.original_title}
                                 </Text>
-                            )}
+                            </View>
+                            <View style={styles.posterContainer}>
+                                {item.poster_path ? (
+                                    <Image
+                                        style={{ width: '100%', height: '100%' }}
+                                        source={{ uri: imageUrl(item.poster_path) }}
+                                    />
+                                ) : (
+                                        <Text style={commonStyle.infoMessageTextStyle}>
+                                            No poster available
+                                        </Text>
+                                    )}
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View>
-        </TouchableOpacity>
+                </TouchableOpacity>
+            )
     )
 
     render() {
@@ -125,21 +153,41 @@ class Home extends Component {
                     value={this.state.undebouncedText}
                     placeholder='Search'
                 />
+                <View
+                    style={{
+                        flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10
+                    }}
+                >
+                    <TouchableOpacity
+                        onPress={() => {
+                            NavigationService.navigate(INFO);
+                        }}
+                    >
+                        <Icon name="info" color={theme.blue} />
+                    </TouchableOpacity>
+                    {total.results > 0 &&
+                        <Text style={{ color: theme.grey2, fontSize: 14 }}>
+                            Showing {total.results} result{total.results > 1 ? 's' : ''}
+                        </Text>
+                    }
+                </View>
                 {isSearching ? (
                     <View style={commonStyle.noDataContainer}>
                         <ActivityIndicator size="large" />
                     </View>
                 ) : (
-                        <View>
+                        <View style={{ flex: 1 }}>
                             <FlatList
                                 data={searchResult}
                                 renderItem={({ item }) => this.renderMovieCard(item)}
                                 keyExtractor={item => item.id.toString()}
                                 showsVerticalScrollIndicator={false}
-                                onEndReached={() =>
-                                    currentPage < total.pages && !isDeltaLoading &&
-                                    this.props.searchMovie(lastSearchedQuery, currentPage + 1)
-                                }
+                                onEndReached={() => {
+                                    if (currentPage < total.pages && !isDeltaLoading) {
+                                        // debugger;
+                                        this.props.searchMovie(lastSearchedQuery, currentPage + 1);
+                                    }
+                                }}
                                 onEndReachedThreshold={0}
                                 ListEmptyComponent={
                                     <View style={commonStyle.noDataContainer}>
@@ -148,13 +196,7 @@ class Home extends Component {
                                         </Text>
                                     </View>
                                 }
-                                contentContainerStyle={{ paddingBottom: 50 }}
                             />
-                            {isDeltaLoading && (<View
-                                style={styles.cardContainer}
-                            >
-                                <ActivityIndicator size="large" color={theme.white} />
-                            </View>)}
                         </View>
                     )}
             </View>

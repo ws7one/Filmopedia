@@ -10,6 +10,8 @@ import NavigationService from '../../../NavigationService.js';
 import { getResource } from '../../../services/ApiService';
 import { searchEndpoint } from '../../../services/Endpoints';
 import { DETAIL } from '../../../navigators/ScreenNames';
+import { storeData } from '../../../constants/utils';
+import { LAST_SEARCHED_QUERY } from '../../../constants';
 
 export const changeMessage = text => dispatch => {
     dispatch({
@@ -26,6 +28,7 @@ export const searchMovie = (query, page = 1) => dispatch => {
     getResource(searchEndpoint(query, page))
         .then(data => {
             console.log(data);
+            storeData(query, LAST_SEARCHED_QUERY);
             dispatch({ type: SEARCH_MOVIE_SUCCESS, payload: data, query });
         })
         .catch(error => {
